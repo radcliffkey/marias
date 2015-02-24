@@ -5,6 +5,7 @@ Created on Feb 22, 2015
 '''
 
 import deck
+from deck import Card
 
 class StdGameRules(object):
     '''
@@ -20,12 +21,32 @@ class StdGameRules(object):
          deck.RANK_ACE: 7    
     }
 
-    def ranking(self, card):
-        return StdGameRules.RANKING[card.rank]
-
     def __init__(self, gameType):
         self.gameType = gameType
+
+    def rankValue(self, card):
+        return StdGameRules.RANKING[card.rank]
     
+    def takingValue(self, card, turnSuit):
+        if card.suit == turnSuit:
+            return self.rankValue(card)
+        if card.suit == self.gameType.trump:
+            return self.rankValue(card) + 8
+        return 0
+    
+    def pointValue(self, card, player):
+        if card.rank in (deck.RANK_10, deck.RANK_ACE):
+            return (10, 0)
+        if self.isMarriage(card, player):
+            return (0, 40) if card.suit == self.gameType.trump else (0, 20)
+    
+    def isMarriage(self, card, player):
+        if card.rank == deck.RANK_OBER and Card(card.suit, deck.RANK_KING) in player.hand.cards:
+            return True
+        if card.rank == deck.RANK_KING and Card(card.suit, deck.RANK_OBER) in player.hand.cards:
+            return True
+        return False
+
     def isAllowedInTalon(self, card):
         return card.rank not in (deck.RANK_10, deck.RANK_ACE)
     
@@ -39,10 +60,10 @@ class StdGameRules(object):
         suit = table[0].suit
         
         matchingSuitCards = [card for card in hand.cards if card.suit == suit]
-        
+
         if matchingSuitCards:
             rankingToBeat = self.getSameSuitRankingToBeat(table)
-            higherCards = [card for card in matchingSuitCards if self.ranking(card) > rankingToBeat]
+            higherCards = [card for card in matchingSuitCards if self.rankValue(card) > rankingToBeat]
             if not higherCards:
                 return matchingSuitCards
             else:
@@ -52,7 +73,7 @@ class StdGameRules(object):
             if not trumpCards:
                 return list(hand.cards)
             rankingToBeat = self.getTrumpRankingToBeat(table)
-            higherCards = [card for card in trumpCards if self.ranking(card) > rankingToBeat]
+            higherCards = [card for card in trumpCards if self.rankValue(card) > rankingToBeat]
             if not higherCards:
                 return trumpCards
             else:
@@ -60,15 +81,34 @@ class StdGameRules(object):
 
     def getSameSuitRankingToBeat(self, table):
         if len(table) == 1:
-            return self.ranking(table[0])
+            return self.rankValue(table[0])
         if table[1].suit == self.gameType.trump:
             return -1
         if table[1].suit == table[0].suit:
-            return self.ranking(table[1])
+            return self.rankValue(table[1])
         return -1
     
     def getTrumpRankingToBeat(self, table):
         if len(table) == 2 and table[1].suit == self.gameType.trump:
-            return self.ranking(table[1])
+            return self.rankValue(table[1])
         return -1
+    
+    def scoreTurn(self, cardsPlayed, players):
+        turnSuit = cardsPlayed[0].suit
+        maxTakeValue = -1
+        takingPlayerIdx = -1
+        takingPlayerScore = 0
+        scores = [0] * len(players)
+        for i in range(len(players)):
+            takeValue = self.takingValue(cardsPlayed[i], turnSuit)
+            if takeValue > maxTakeValue:
+                maxTakeValue = takeValue
+                takingPlayerIdx = i
+            takePoints, playerPoints = self.pointValue(cardsPlayed[i], players[i])
+            scores[i] = playerPoints
+            takingPlayerScore += takePoints
+        scores[takingPlayerIdx] += takingPlayerScore
+        
+        return scores, takingPlayerIdx
+    
         
