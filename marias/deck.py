@@ -30,6 +30,9 @@ class Card:
         
     def __repr__(self):
         return self.suit.symbol + self.rank.symbol
+    
+    def __eq__(self, other):
+        return other and self.rank == other.rank and self.suit == other.suit
 
 class Deck:
     def __init__(self, cards):

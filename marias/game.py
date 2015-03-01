@@ -22,6 +22,9 @@ class BetlGameType:
 class DurchGameType:
     pass
 
+def rotateList(l, firstIdx):
+    return l[firstIdx:] +l[:firstIdx]
+
 class Game:
 
     def __init__(self, players):
@@ -33,11 +36,7 @@ class Game:
     
     def orderedPlayers(self):
         #starting from the leader
-        return [
-            self.players[self.leaderIdx],
-            self.players[self.leaderIdx + 1 % PLAYER_CNT],
-            self.players[self.leaderIdx + 2 % PLAYER_CNT]
-        ]
+        return rotateList(self.players, self.leaderIdx)
             
     def deal(self):
         ordPlayers = self.orderedPlayers()
@@ -70,15 +69,27 @@ class Game:
         
         leader.hand.removeCards(self.talon)
         
+        scores = [0] * PLAYER_CNT
+        
         table = []
         startingPlayerIdx = self.leaderIdx
         for i in range(10):
-            table.append(self.players[startingPlayerIdx].play(table, self.rules))
+            ordPlayers = rotateList(self.players, startingPlayerIdx)
+            for player in ordPlayers:                    
+                table.append(player.play(table, self.rules))
+                print("Played:", table[-1])
+            
+            table = rotateList(table, (PLAYER_CNT - startingPlayerIdx) % PLAYER_CNT)
             print("Table:", table)
-            table.append(self.players[startingPlayerIdx + 1 % PLAYER_CNT].play(table, self.rules))
-            print("Table:", table)
-            table.append(self.players[startingPlayerIdx + 2 % PLAYER_CNT].play(table, self.rules))
-            print("Table:", table)
+            
+            turnScores, takingPlayerIdx = self.rules.scoreTurn(table, self.players)
+            for j in range(PLAYER_CNT):
+                scores[j] += turnScores[j]
+            
+            startingPlayerIdx = takingPlayerIdx
+            
+            
+            print("Scores:", scores)
             
             table = []
         

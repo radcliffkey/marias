@@ -7,8 +7,9 @@ Created on Feb 22, 2015
 import deck
 from deck import Card
 
-class StdGameRules(object):
+class StdGameRules:
     '''
+    Rules of standard Marias game
     '''
     RANKING = {
          deck.RANK_7: 0,
@@ -39,6 +40,7 @@ class StdGameRules(object):
             return (10, 0)
         if self.isMarriage(card, player):
             return (0, 40) if card.suit == self.gameType.trump else (0, 20)
+        return 0, 0
     
     def isMarriage(self, card, player):
         if card.rank == deck.RANK_OBER and Card(card.suit, deck.RANK_KING) in player.hand.cards:
@@ -105,7 +107,7 @@ class StdGameRules(object):
                 maxTakeValue = takeValue
                 takingPlayerIdx = i
             takePoints, playerPoints = self.pointValue(cardsPlayed[i], players[i])
-            scores[i] = playerPoints
+            scores[i] += playerPoints
             takingPlayerScore += takePoints
         scores[takingPlayerIdx] += takingPlayerScore
         
