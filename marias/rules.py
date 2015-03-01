@@ -113,4 +113,9 @@ class StdGameRules:
         
         return scores, takingPlayerIdx
     
-        
+    def cardSortingKey(self, card):
+        return deck.GERMAN_SUITS.index(card.suit) * len(deck.GERMAN_RANKS) + self.rankValue(card)
+    
+    def sortedCards(self, cards):
+        return sorted(cards, key = self.cardSortingKey)   
+    

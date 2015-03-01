@@ -22,6 +22,27 @@ class TestRules(unittest.TestCase):
     def testRankValue(self):
         self.assertTrue(self.stdRules.rankValue(Card(deck.SUIT_LEAVES, deck.RANK_10))
                  > self.stdRules.rankValue(Card(deck.SUIT_LEAVES, deck.RANK_KING)))
+        
+    def testCardSorting(self):
+        cards = [
+            Card(deck.SUIT_HEARTS, deck.RANK_10),
+            Card(deck.SUIT_BELLS, deck.RANK_ACE),
+            Card(deck.SUIT_HEARTS, deck.RANK_KING),
+            Card(deck.SUIT_BELLS, deck.RANK_8),
+            Card(deck.SUIT_HEARTS, deck.RANK_ACE)
+        ]
+        
+        manualSortedCards = [
+            Card(deck.SUIT_HEARTS, deck.RANK_KING),           
+            Card(deck.SUIT_HEARTS, deck.RANK_10),           
+            Card(deck.SUIT_HEARTS, deck.RANK_ACE),           
+            Card(deck.SUIT_BELLS, deck.RANK_8),
+            Card(deck.SUIT_BELLS, deck.RANK_ACE)
+        ]
+        
+        sortedCards = self.stdRules.sortedCards(cards)
+        
+        self.assertListEqual(manualSortedCards, sortedCards)
 
     def testScoreTurn(self):
         p1 = Player("p1")

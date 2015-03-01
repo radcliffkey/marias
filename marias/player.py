@@ -17,6 +17,8 @@ class Player:
     def __str__(self, rules = None):
         if not rules:
             sortKey = deck.germanDefaultSortingKey
+        else:
+            sortKey = rules.cardSortingKey
         return "name: {name}, hand: {hand}".format(name=self.name, hand=sorted(self.hand, key=sortKey))
     
     def pickTrumpCard(self):
@@ -31,20 +33,24 @@ class Player:
         return self.selectedGameType
     
     def selectTalon(self, rules):
-        print("I have: " + str(self.hand))
+        print("I have: ", rules.sortedCards(self.hand))
         allowedCards = rules.allowedTalonCards(self.hand)
         if isinstance(rules.gameType, StdGameType):
             allowedCards = list(filter(lambda c: c.suit != rules.gameType.trump, allowedCards))
         
-        print("Talon candidates: ", allowedCards)
+        nonMarriageAllowedCards = [c for c in allowedCards if not rules.isMarriage(c, self)]
+        if len(nonMarriageAllowedCards) >= 2:
+            allowedCards = nonMarriageAllowedCards
+            
+        print("Talon candidates: ", rules.sortedCards(allowedCards))
         talon = allowedCards[:2]
 
         return talon
     
     def play(self, table, rules):
         allowedTurns = rules.allowedTurns(self.hand, table)
-        print(self)
-        print("Allowed turns", allowedTurns)
+        print(self.__str__(rules))
+        print("Allowed turns", rules.sortedCards(allowedTurns))
         selCardList = random.sample(allowedTurns, 1)
         self.hand.removeCards(selCardList)
         

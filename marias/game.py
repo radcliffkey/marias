@@ -74,23 +74,26 @@ class Game:
         table = []
         startingPlayerIdx = self.leaderIdx
         for i in range(10):
+            absIndices = rotateList(list(range(PLAYER_CNT)), startingPlayerIdx)
             ordPlayers = rotateList(self.players, startingPlayerIdx)
             for player in ordPlayers:                    
                 table.append(player.play(table, self.rules))
                 print("Played:", table[-1])
             
-            table = rotateList(table, (PLAYER_CNT - startingPlayerIdx) % PLAYER_CNT)
             print("Table:", table)
             
-            turnScores, takingPlayerIdx = self.rules.scoreTurn(table, self.players)
-            for j in range(PLAYER_CNT):
-                scores[j] += turnScores[j]
-            
-            startingPlayerIdx = takingPlayerIdx
-            
+            turnScores, takingPlayerIdx = self.rules.scoreTurn(table, ordPlayers)
+            takingPlayerIdx = absIndices[takingPlayerIdx]
+            print("Taking player: ", takingPlayerIdx + 1)
+            for idx, score in zip(absIndices, turnScores):
+                scores[idx] += score
             
             print("Scores:", scores)
+            startingPlayerIdx = takingPlayerIdx
             
             table = []
+        scores[startingPlayerIdx] += 10
+        
+        print("Scores:", scores)
         
         
