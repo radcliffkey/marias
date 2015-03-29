@@ -4,26 +4,13 @@ Created on Feb 22, 2015
 @author: Radoslav Klic
 '''
 
+from util import rotateList
 from deck import GermanDeck
+from gameType import StdGameType
 from rules import StdGameRules
+from player import ROLE_LEADER, ROLE_COOP1, ROLE_COOP2
 
 PLAYER_CNT = 3
-
-class StdGameType:
-    def __init__(self, trumpCard, is100, is7):
-        self.trump = trumpCard.suit
-        self.revealedTrumpCard = trumpCard
-        self.is100 = is100
-        self.is7 = is7
-
-class BetlGameType:
-    pass
-
-class DurchGameType:
-    pass
-
-def rotateList(l, firstIdx):
-    return l[firstIdx:] +l[:firstIdx]
 
 class Game:
 
@@ -48,6 +35,10 @@ class Game:
         self.deal()
         
         ordPlayers = self.orderedPlayers()
+        ordPlayers[0].role = ROLE_LEADER
+        ordPlayers[1].role = ROLE_COOP1
+        ordPlayers[2].role = ROLE_COOP2
+        
         leader = ordPlayers[0]
         
         gameType = leader.selectGameType()
@@ -71,9 +62,13 @@ class Game:
         
         scores = [0] * PLAYER_CNT
         
+        turnHistory = []
+        
         table = []
         startingPlayerIdx = self.leaderIdx
         for i in range(10):
+            table = []
+            
             absIndices = rotateList(list(range(PLAYER_CNT)), startingPlayerIdx)
             ordPlayers = rotateList(self.players, startingPlayerIdx)
             for player in ordPlayers:                    
@@ -81,19 +76,24 @@ class Game:
                 print("Played:", table[-1])
             
             print("Table:", table)
-            
+                      
             turnScores, takingPlayerIdx = self.rules.scoreTurn(table, ordPlayers)
             takingPlayerIdx = absIndices[takingPlayerIdx]
+            
+            turnHistory.append((rotateList(table, startingPlayerIdx), startingPlayerIdx, takingPlayerIdx))
             print("Taking player: ", takingPlayerIdx + 1)
             for idx, score in zip(absIndices, turnScores):
                 scores[idx] += score
             
             print("Scores:", scores)
-            startingPlayerIdx = takingPlayerIdx
+            startingPlayerIdx = takingPlayerIdx          
             
-            table = []
         scores[startingPlayerIdx] += 10
         
         print("Scores:", scores)
+        
+        moneyGains = self.rules.moneyGains(self.players, scores, turnHistory)
+        
+        print("Money gains:", moneyGains)
         
         

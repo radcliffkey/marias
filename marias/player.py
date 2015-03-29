@@ -6,13 +6,18 @@ Created on Feb 22, 2015
 import random
 import deck
 from deck import Deck
-from game import StdGameType
+from gameType import StdGameType
+
+ROLE_LEADER = "Leader"
+ROLE_COOP1 = "Cooperator 1"
+ROLE_COOP2 = "Cooperator 2"
 
 class Player:
 
     def __init__(self, name):
         self.name = name
         self.hand = Deck([])
+        self.role = None
 
     def __str__(self, rules = None):
         if not rules:
