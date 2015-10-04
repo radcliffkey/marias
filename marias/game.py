@@ -22,7 +22,7 @@ class Game:
         self.deck.shuffle()
     
     def orderedPlayers(self):
-        #starting from the leader
+        # starting from the leader
         return rotateList(self.players, self.leaderIdx)
             
     def deal(self):
@@ -63,13 +63,16 @@ class Game:
         scores = [0] * PLAYER_CNT
         
         turnHistory = []
-        
+
+        # Cards played, ordered from the turn starting player's one
         table = []
         startingPlayerIdx = self.leaderIdx
         for i in range(10):
             table = []
-            
+
+            # Map relative index (to the turn starting player) -> absolute index
             absIndices = rotateList(list(range(PLAYER_CNT)), startingPlayerIdx)
+            # ordered players from the turn starting player
             ordPlayers = rotateList(self.players, startingPlayerIdx)
             for player in ordPlayers:                    
                 table.append(player.play(table, self.rules))
@@ -77,8 +80,8 @@ class Game:
             
             print("Table:", table)
                       
-            turnScores, takingPlayerIdx = self.rules.scoreTurn(table, ordPlayers)
-            takingPlayerIdx = absIndices[takingPlayerIdx]
+            turnScores, takingPlayerRelIdx = self.rules.scoreTurn(table, ordPlayers)
+            takingPlayerIdx = absIndices[takingPlayerRelIdx]
             
             turnHistory.append((rotateList(table, startingPlayerIdx), startingPlayerIdx, takingPlayerIdx))
             print("Taking player: ", takingPlayerIdx + 1)
@@ -86,7 +89,7 @@ class Game:
                 scores[idx] += score
             
             print("Scores:", scores)
-            startingPlayerIdx = takingPlayerIdx          
+            startingPlayerIdx = takingPlayerIdx
             
         scores[startingPlayerIdx] += 10
         
@@ -95,5 +98,3 @@ class Game:
         moneyGains = self.rules.moneyGains(self.players, scores, turnHistory)
         
         print("Money gains:", moneyGains)
-        
-        

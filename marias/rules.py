@@ -24,7 +24,7 @@ class StdGameRules:
          deck.RANK_OBER: 4,
          deck.RANK_KING: 5,
          deck.RANK_10: 6,
-         deck.RANK_ACE: 7    
+         deck.RANK_ACE: 7
     }
 
     def __init__(self, gameType):
@@ -45,7 +45,7 @@ class StdGameRules:
             return (10, 0)
         if self.isMarriage(card, player):
             return (0, 40) if card.suit == self.gameType.trump else (0, 20)
-        return 0, 0
+        return (0, 0)
     
     def isMarriage(self, card, player):
         if card.rank == deck.RANK_OBER and Card(card.suit, deck.RANK_KING) in player.hand.cards:

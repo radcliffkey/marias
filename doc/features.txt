@@ -1,0 +1,30 @@
+Possible feature for Marias. Features are assigned per turn.
+
+Player:
+
+- player role (leader/coop)
+- all cards on hand
+- number of cards for each suit. to break symmetry, we can order the numbers and have features like #1 suit count ... #4 suit 
+
+Turn
+
+- turn number
+- player's relative index (0 means I am the first player in given turn)
+
+Game
+
+- trump suit
+
+Selected card (When recording features, it will be know only after player has chosen one. When using a trained model, the model will score all selectable cards and pick highest scoring one)
+
+- suit of selected card
+- rank of selected card
+- suit == suit of first/second played card
+- rank > rank of first/second played card
+- is trump
+
+
+The predicted function
+
+Can be constructed from local point gain and final financial gain. 
+
