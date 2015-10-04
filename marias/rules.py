@@ -129,36 +129,30 @@ class StdGameRules:
             return SILENT_100_COST * (score - 90) / 10
         else:
             return 0
-    
-    def moneyGains(self, players, scores, turnHistory):
+
+    def moneyGains(self, players, scores, turnHistory) -> list:
         if self.gameType.is100 or self.gameType.is7:
             raise Exception("Announced 100 or announced 7 not supported yet")
-        
         leaderWonGame = False
         leaderWon7 = False
         coopWon7 = False
         leader7killed = False
         coop7killed = False
-        
         leaderScore = 0
         coopScore = 0
-        
         leaderGain = 0
         coopGain = 0
-        
         for player, score, idx in zip(players, scores, range(len(players))):
             if player.role == ROLE_LEADER:
                 leaderScore += score
                 leaderIdx = idx
             else:
                 coopScore += score
-        
         if leaderScore == coopScore:
             raise Exception("Leader and opposition scores cannot be equal.")
         if leaderScore > coopScore:
             leaderWonGame = True
-
-        lastTurnCards, startIdx, takingIdx =  turnHistory[-1]
+        lastTurnCards, startIdx, takingIdx = turnHistory[-1]
         try:
             trump7Idx = lastTurnCards.index(deck.Card(self.gameType.trump, deck.RANK_7))
             if trump7Idx == takingIdx:
@@ -173,16 +167,14 @@ class StdGameRules:
                     coop7killed = True
         except ValueError:
             pass
-            
         if leaderWonGame:
             gameGain = 2 * (2 * BASE_GAME_COST + self.above100Gain(leaderScore))
             leaderGain += gameGain
-            coopGain -= gameGain          
+            coopGain -= gameGain
         else:
             gameGain = 2 * (2 * BASE_GAME_COST + self.above100Gain(coopScore))
             coopGain += gameGain
             leaderGain -= gameGain
-        
         if leaderWon7 or coop7killed:
             silent7Gain = 2 * BASE_7_COST
             leaderGain += silent7Gain
@@ -191,11 +183,8 @@ class StdGameRules:
             silent7Gain = 2 * BASE_7_COST
             leaderGain -= silent7Gain
             coopGain += silent7Gain
-        
         gains = [coopGain / 2] * len(players)
         gains[leaderIdx] = leaderGain
-        
         if self.gameType.trump == deck.SUIT_HEARTS:
             gains = [2 * g for g in gains]
-        
         return gains

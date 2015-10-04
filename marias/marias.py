@@ -7,6 +7,7 @@ Created on Feb 22, 2015
 from game import Game
 from player import Player
 
+
 def main():
     p1 = Player("1")
     p2 = Player("2")
@@ -21,4 +22,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    

@@ -5,6 +5,11 @@ Player:
 - player role (leader/coop)
 - all cards on hand
 - number of cards for each suit. to break symmetry, we can order the numbers and have features like #1 suit count ... #4 suit 
+- has X marriage for X in suits
+
+Other players
+- role of player before/after me (ally od adversary)
+- number of cards played for each suit for each player
 
 Turn
 
@@ -14,6 +19,7 @@ Turn
 Game
 
 - trump suit
+- number of cards played for each suit
 
 Selected card (When recording features, it will be know only after player has chosen one. When using a trained model, the model will score all selectable cards and pick highest scoring one)
 
@@ -22,6 +28,7 @@ Selected card (When recording features, it will be know only after player has ch
 - suit == suit of first/second played card
 - rank > rank of first/second played card
 - is trump
+- is part of marriage (ober + king)
 
 
 The predicted function

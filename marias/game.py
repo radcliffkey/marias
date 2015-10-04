@@ -55,10 +55,10 @@ class Game:
         else:
             raise Exception("Game type not supported")
         
-        self.talon = leader.selectTalon(self.rules)
-        print("Talon:", self.talon)
+        talon = leader.selectTalon(self.rules)
+        print("Talon:", talon)
         
-        leader.hand.removeCards(self.talon)
+        leader.hand.removeCards(talon)
         
         scores = [0] * PLAYER_CNT
         
@@ -74,7 +74,7 @@ class Game:
             absIndices = rotateList(list(range(PLAYER_CNT)), startingPlayerIdx)
             # ordered players from the turn starting player
             ordPlayers = rotateList(self.players, startingPlayerIdx)
-            for player in ordPlayers:                    
+            for player in ordPlayers:
                 table.append(player.play(table, self.rules))
                 print("Played:", table[-1])
             
@@ -96,5 +96,5 @@ class Game:
         print("Scores:", scores)
         
         moneyGains = self.rules.moneyGains(self.players, scores, turnHistory)
-        
+
         print("Money gains:", moneyGains)
